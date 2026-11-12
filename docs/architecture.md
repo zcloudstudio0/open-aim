@@ -43,7 +43,10 @@
 | `studio-store.js` | Saves your Studio drills so they show up in the lobby |
 | `studio-launch.js` | Starts a Studio drill in the game and brings you back to the Studio after |
 | `shooting-error.js` | The shooting error graph on the results screen |
+| `aim-coach.js` | Coach panel (top bar) and round summary, in Thai or English: why shots missed (over/under-flick, moving, too low/high), crosshair placement, counter-strafe, progress charts, a training plan from your weak spots, easier/harder drill suggestions, spray groups, slow-motion shot review and a sensitivity comparison. main.js patches the game's frame loop to call `window.__aimCoachFrame` every frame and `window.__aimCoachShot` every shot; history is kept in localStorage (`es-coach-history-v1`) |
 | `translations.js`, `english-fixes.js` | Proper English for the interface |
+| `mods/_assets/r20261021-1/i18n/th.mjs`, `th.dict.mjs` | Thai interface (default; the top bar's ENGLISH button switches, saved as localStorage `aim-lang`). The game's text is first turned into English, then `toThai()` looks the English up in `th.dict.mjs` (`#` stands for a number; "Start: …" style sentences use patterns). The app's own panels and the Studio go through the same lookup. Map, agent, weapon and drill names stay English. Text without an entry stays English and is listed in `window.__thMissing` (DevTools) |
+| `mods/_assets/r20261021-1/i18n/locale-control.mjs` | The Thai/English button in the top bar (replaces the original Vietnamese toggle) |
 | `test-maps.mjs` | Smoke test: loads several maps in a running app and reports errors |
 
 ## Where player data lives

@@ -92,6 +92,9 @@ const STUDIO_LAUNCH_JS = fs.readFileSync(path.join(__dirname, "studio-launch.js"
 // Shooting error graph (shooting-error.js). The game's frame loop is served with one extra
 // call that hands every shot (its total spread and the spray part) to the graph.
 const SHOT_GRAPH_JS = fs.readFileSync(path.join(__dirname, "shooting-error.js"), "utf-8");
+// Aim coach (aim-coach.js): miss analysis, crosshair placement, counter-strafe, progress,
+// training plan, spray and shot review, sensitivity comparison. Fed by the same frame loop.
+const AIM_COACH_JS = fs.readFileSync(path.join(__dirname, "aim-coach.js"), "utf-8");
 // One executeJavaScript call avoids Electron registering a did-stop-loading
 // listener for each UI script while the page is still loading.
 const UI_SCRIPTS = [
@@ -102,6 +105,7 @@ const UI_SCRIPTS = [
   ["ADVANCED TRACERS", ADVANCED_TRACERS_JS],
   ["LOCAL CUSTOMIZATION", LOCAL_CUSTOMIZATION_JS],
   ["PLAYER TOOLS", PLAYER_TOOLS_JS],
+  ["AIM COACH", AIM_COACH_JS], // before LOBBY BAR, which adds its button
   ["INTERFACE MODE", INTERFACE_MODE_JS],
   ["FRAME METER", FRAME_METER_JS],
   ["VIDEO SETTINGS", VIDEO_SETTINGS_JS],
@@ -120,7 +124,10 @@ const UI_SCRIPT_BATCH = UI_SCRIPTS.map(([name, source]) =>
 ).join("\n");
 const SHOT_LOOP_FILE = "/next/js/OkAdunfX.js";
 const SHOT_LOOP_FROM = 'xe.kind==="shot"&&(Kt.push(xe.tick*ve)';
-const SHOT_LOOP_TO = 'xe.kind==="shot"&&(window.__aimShot?.(xe),Kt.push(xe.tick*ve)';
+const SHOT_LOOP_TO = 'xe.kind==="shot"&&(window.__aimShot?.(xe),window.__aimCoachShot?.(xe,ce),Kt.push(xe.tick*ve)';
+// Once per rendered frame of a round: the world snapshot, the camera and whether the round is running.
+const FRAME_LOOP_FROM = 'const ce=hs(de);for(const xe of Cn)';
+const FRAME_LOOP_TO = 'const ce=hs(de);window.__aimCoachFrame?.(ce,r.camera,Z);for(const xe of Cn)';
 
 // The site's English translator garbles some Vietnamese strings. Serve a thin
 // wrapper in its place that applies translations.js first; the original module
@@ -128,7 +135,9 @@ const SHOT_LOOP_TO = 'xe.kind==="shot"&&(window.__aimShot?.(xe),Kt.push(xe.tick*
 const TRANSLATOR = "/_assets/r20261021-1/i18n/translate-en.mjs";
 const ORIGINAL_TRANSLATOR = "/_assets/r20261021-1/i18n/translate-en.original.mjs";
 const TRANSLATOR_WRAPPER = `import dictionary from './en.dict.mjs';
-import { translateText as base } from './translate-en.original.mjs';
+import { translateText as base, localizeMetadata as baseMetadata } from './translate-en.original.mjs';
+// th.mjs (app/mods): the English result is then shown in Thai unless the player picked English.
+import { toThai } from './th.mjs';
 export * from './translate-en.original.mjs';
 // english-fixes.js: proper English replacing the dictionary's machine translations
 // (the dictionary object is shared with the translator, which reads it lazily).
@@ -144,6 +153,16 @@ export function translateText(value) {
   }
   const result = base(value);
   if (window.__trlog && typeof source === 'string' && result !== source) window.__trlog.set(source.trim(), result.trim());
+  return toThai(result);
+}
+// Drill names and descriptions: keep the difficulty prefix (简单 - ...) the game parses.
+const PREFIX = /^(简单|普通|中等|困难)(?:\\s*[-－—·]\\s*|\\s+)/;
+const thaiField = (s) => { const m = s.match(PREFIX); return m ? m[0] + toThai(s.slice(m[0].length)) : toThai(s); };
+export function localizeMetadata(value) {
+  if (Array.isArray(value)) return value.map(localizeMetadata);
+  const result = baseMetadata(value);
+  if (!result || typeof result !== 'object') return result;
+  for (const field of ['name', 'description', 'title']) if (typeof result[field] === 'string') result[field] = thaiField(result[field]);
   return result;
 }
 `;
@@ -331,7 +350,8 @@ function handle(req, res) {
     if (file) {
       const source = fs.readFileSync(file, "utf-8");
       if (!source.includes(SHOT_LOOP_FROM)) console.log("SHOT GRAPH: frame loop changed, graph gets no shots");
-      const body = Buffer.from(source.replace(SHOT_LOOP_FROM, SHOT_LOOP_TO), "utf-8");
+      if (!source.includes(FRAME_LOOP_FROM)) console.log("AIM COACH: frame loop changed, coach gets no frames");
+      const body = Buffer.from(source.replace(SHOT_LOOP_FROM, SHOT_LOOP_TO).replace(FRAME_LOOP_FROM, FRAME_LOOP_TO), "utf-8");
       res.writeHead(200, { "Content-Type": "text/javascript", "Content-Length": body.length, "Cache-Control": "no-cache" });
       res.end(req.method === "HEAD" ? undefined : body);
       return;
