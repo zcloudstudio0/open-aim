@@ -2,6 +2,23 @@
 
 All notable changes to open-aim. Newest first.
 
+## [1.5.0] - 2026-11-12
+
+**The whole app in Thai.** Your settings and training data are kept when you update.
+
+### Added
+
+- Thai interface by default: lobby, all top tabs, drill names and descriptions,
+  settings, round HUD and results, the coach, Sens tools, Backups, Updates,
+  VALORANT settings import and the Studio.
+- **ENGLISH / ภาษาไทย** button in the top bar to switch language (the app reloads).
+  The coach follows the same setting.
+- Map, agent, weapon and drill names stay in English, as in Thai VALORANT.
+
+### Changed
+
+- The language button replaces the original Vietnamese toggle.
+
 ## [1.4.0] - 2026-11-12
 
 **Aim coach: see why you miss and what to train next.** In Thai by default, with an
