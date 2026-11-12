@@ -2,6 +2,42 @@
 
 All notable changes to open-aim. Newest first.
 
+## [1.4.0] - 2026-11-12
+
+**Aim coach: see why you miss and what to train next.** In Thai by default, with an
+English switch. Your settings and training data are kept when you update.
+
+### Added
+
+- **Coach** button in the lobby bar, and a round summary card after every round with
+  your main weak spot and an easier/harder drill to try next.
+- **Why you missed**: every shot is sorted into headshot, hit, over-flick, under-flick,
+  shot while moving, aimed too low or too high, with a tip for the most common ones.
+- **Crosshair placement**: how far your crosshair was from the head when a target
+  appeared, and how much of the time it sat at head level.
+- **Counter-strafe**: the share of shots fired while still moving (aim for under 10%).
+- **Progress** charts for accuracy, headshots, reaction time, crosshair placement and
+  shots while stopped, for all drills or one drill.
+- **Training plan**: about 15 minutes of drills picked from the weak spots in your last
+  10 rounds, each with a Start button.
+- **Difficulty**: over 85% accuracy suggests the harder drill, under 55% the easier one.
+- **Spray**: where each bullet of a burst went, relative to the first one.
+- **Shot review**: your crosshair's last 0.6 s before each shot, played back at 0.1×-1×.
+- **Sensitivity lab**: your results per sensitivity, with a −15% / same / +15% A/B test.
+
+Coach data stays on your computer (localStorage, `es-coach-history-v1`).
+
+## [1.3.1] - 2026-11-12
+
+### Changed
+
+- The app checks for updates and downloads installers from
+  [zcloudstudio0/open-aim](https://github.com/zcloudstudio0/open-aim) instead of
+  unkwsr/open-aim. Download and clone links in the README and site point here too.
+  The game itself is the same as 1.3.0.
+- If you have 1.3.0 or older installed, install 1.3.1 or newer once by hand; after that
+  the app updates itself from this repository.
+
 ## [1.3.0] - 2026-10-29
 
 **The biggest update yet: a new map, 15 skins, new aiming and effects, a much bigger Studio and smoother performance.**
