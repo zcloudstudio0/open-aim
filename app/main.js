@@ -135,7 +135,9 @@ const FRAME_LOOP_TO = 'const ce=hs(de);window.__aimCoachFrame?.(ce,r.camera,Z);f
 const TRANSLATOR = "/_assets/r20261021-1/i18n/translate-en.mjs";
 const ORIGINAL_TRANSLATOR = "/_assets/r20261021-1/i18n/translate-en.original.mjs";
 const TRANSLATOR_WRAPPER = `import dictionary from './en.dict.mjs';
-import { translateText as base } from './translate-en.original.mjs';
+import { translateText as base, localizeMetadata as baseMetadata } from './translate-en.original.mjs';
+// th.mjs (app/mods): the English result is then shown in Thai unless the player picked English.
+import { toThai } from './th.mjs';
 export * from './translate-en.original.mjs';
 // english-fixes.js: proper English replacing the dictionary's machine translations
 // (the dictionary object is shared with the translator, which reads it lazily).
@@ -151,6 +153,16 @@ export function translateText(value) {
   }
   const result = base(value);
   if (window.__trlog && typeof source === 'string' && result !== source) window.__trlog.set(source.trim(), result.trim());
+  return toThai(result);
+}
+// Drill names and descriptions: keep the difficulty prefix (简单 - ...) the game parses.
+const PREFIX = /^(简单|普通|中等|困难)(?:\\s*[-－—·]\\s*|\\s+)/;
+const thaiField = (s) => { const m = s.match(PREFIX); return m ? m[0] + toThai(s.slice(m[0].length)) : toThai(s); };
+export function localizeMetadata(value) {
+  if (Array.isArray(value)) return value.map(localizeMetadata);
+  const result = baseMetadata(value);
+  if (!result || typeof result !== 'object') return result;
+  for (const field of ['name', 'description', 'title']) if (typeof result[field] === 'string') result[field] = thaiField(result[field]);
   return result;
 }
 `;

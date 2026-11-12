@@ -116,7 +116,6 @@
       s.textContent = window.__aimCoach.label();
       b.appendChild(s);
       b.addEventListener("click", () => window.__aimCoach.open());
-      addEventListener("aim-coach-lang", () => { s.textContent = window.__aimCoach.label(); b.title = window.__aimCoach.title(); });
       bar.appendChild(b);
     }
 

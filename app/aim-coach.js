@@ -19,7 +19,8 @@
   if (window.__aimCoach) return;
 
   // ---------- language ----------
-  const LANG_KEY = "es-coach-lang";
+  // Shared with the rest of the app (mods/.../i18n/th.mjs): Thai unless the player picked English.
+  const LANG_KEY = "aim-lang";
   const lang = () => { try { return localStorage.getItem(LANG_KEY) === "en" ? "en" : "th"; } catch { return "th"; } };
   const TEXT = {
     th: {
@@ -501,7 +502,8 @@
     }
     const lb = document.createElement("button");
     lb.type = "button"; lb.className = "es-coach-lang"; lb.textContent = t("lang");
-    lb.addEventListener("click", () => { try { localStorage.setItem(LANG_KEY, lang() === "th" ? "en" : "th"); } catch {} open(); window.dispatchEvent(new Event("aim-coach-lang")); });
+    // The whole app switches language, so reload like the top bar's language button.
+    lb.addEventListener("click", () => { try { localStorage.setItem(LANG_KEY, lang() === "th" ? "en" : "th"); } catch {} location.reload(); });
     nav.appendChild(lb);
     document.body.appendChild(shade);
     const view = shade.querySelector(".es-coach-view");
