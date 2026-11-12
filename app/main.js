@@ -92,6 +92,9 @@ const STUDIO_LAUNCH_JS = fs.readFileSync(path.join(__dirname, "studio-launch.js"
 // Shooting error graph (shooting-error.js). The game's frame loop is served with one extra
 // call that hands every shot (its total spread and the spray part) to the graph.
 const SHOT_GRAPH_JS = fs.readFileSync(path.join(__dirname, "shooting-error.js"), "utf-8");
+// Aim coach (aim-coach.js): miss analysis, crosshair placement, counter-strafe, progress,
+// training plan, spray and shot review, sensitivity comparison. Fed by the same frame loop.
+const AIM_COACH_JS = fs.readFileSync(path.join(__dirname, "aim-coach.js"), "utf-8");
 // One executeJavaScript call avoids Electron registering a did-stop-loading
 // listener for each UI script while the page is still loading.
 const UI_SCRIPTS = [
@@ -102,6 +105,7 @@ const UI_SCRIPTS = [
   ["ADVANCED TRACERS", ADVANCED_TRACERS_JS],
   ["LOCAL CUSTOMIZATION", LOCAL_CUSTOMIZATION_JS],
   ["PLAYER TOOLS", PLAYER_TOOLS_JS],
+  ["AIM COACH", AIM_COACH_JS], // before LOBBY BAR, which adds its button
   ["INTERFACE MODE", INTERFACE_MODE_JS],
   ["FRAME METER", FRAME_METER_JS],
   ["VIDEO SETTINGS", VIDEO_SETTINGS_JS],
@@ -120,7 +124,10 @@ const UI_SCRIPT_BATCH = UI_SCRIPTS.map(([name, source]) =>
 ).join("\n");
 const SHOT_LOOP_FILE = "/next/js/OkAdunfX.js";
 const SHOT_LOOP_FROM = 'xe.kind==="shot"&&(Kt.push(xe.tick*ve)';
-const SHOT_LOOP_TO = 'xe.kind==="shot"&&(window.__aimShot?.(xe),Kt.push(xe.tick*ve)';
+const SHOT_LOOP_TO = 'xe.kind==="shot"&&(window.__aimShot?.(xe),window.__aimCoachShot?.(xe,ce),Kt.push(xe.tick*ve)';
+// Once per rendered frame of a round: the world snapshot, the camera and whether the round is running.
+const FRAME_LOOP_FROM = 'const ce=hs(de);for(const xe of Cn)';
+const FRAME_LOOP_TO = 'const ce=hs(de);window.__aimCoachFrame?.(ce,r.camera,Z);for(const xe of Cn)';
 
 // The site's English translator garbles some Vietnamese strings. Serve a thin
 // wrapper in its place that applies translations.js first; the original module
@@ -331,7 +338,8 @@ function handle(req, res) {
     if (file) {
       const source = fs.readFileSync(file, "utf-8");
       if (!source.includes(SHOT_LOOP_FROM)) console.log("SHOT GRAPH: frame loop changed, graph gets no shots");
-      const body = Buffer.from(source.replace(SHOT_LOOP_FROM, SHOT_LOOP_TO), "utf-8");
+      if (!source.includes(FRAME_LOOP_FROM)) console.log("AIM COACH: frame loop changed, coach gets no frames");
+      const body = Buffer.from(source.replace(SHOT_LOOP_FROM, SHOT_LOOP_TO).replace(FRAME_LOOP_FROM, FRAME_LOOP_TO), "utf-8");
       res.writeHead(200, { "Content-Type": "text/javascript", "Content-Length": body.length, "Cache-Control": "no-cache" });
       res.end(req.method === "HEAD" ? undefined : body);
       return;

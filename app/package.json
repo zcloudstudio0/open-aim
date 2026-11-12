@@ -55,7 +55,8 @@
       "local-customization.js",
       "fan-audio.js",
       "sniper-scopes.js",
-      "advanced-tracers.js"
+      "advanced-tracers.js",
+      "aim-coach.js"
     ],
     "extraResources": [
       {

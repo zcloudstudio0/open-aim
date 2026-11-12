@@ -11,6 +11,7 @@
 
   const SENS_ICON = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="7"/><path d="M12 2v5M12 17v5M2 12h5M17 12h5"/></svg>';
   const UPDATE_ICON = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M5 19h14"/></svg>';
+  const COACH_ICON = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h16"/><path d="M7 15l4-4 3 3 5-6"/></svg>';
   const BACKUP_ICON ='<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v12H4z"/><path d="M3 4h18v3H3zM10 11h4"/></svg>';
 
   // The single game-render meter is owned by frame-meter.js.
@@ -103,6 +104,21 @@
     fps.appendChild(fpsLabel);
     fps.addEventListener("click", () => setMeter(!meterOn()));
     bar.appendChild(fps);
+
+    // Aim coach (aim-coach.js): shot analysis, training plan, progress. Label follows its language.
+    if (window.__aimCoach) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "es-bar-btn es-bar-coach";
+      b.title = window.__aimCoach.title();
+      b.innerHTML = COACH_ICON;
+      const s = document.createElement("span");
+      s.textContent = window.__aimCoach.label();
+      b.appendChild(s);
+      b.addEventListener("click", () => window.__aimCoach.open());
+      addEventListener("aim-coach-lang", () => { s.textContent = window.__aimCoach.label(); b.title = window.__aimCoach.title(); });
+      bar.appendChild(b);
+    }
 
     // Panels from player-tools.js.
     for (const [label, title, icon, open] of [
